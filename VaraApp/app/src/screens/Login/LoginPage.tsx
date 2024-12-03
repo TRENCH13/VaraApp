@@ -20,7 +20,6 @@ const LoginPage: React.FC = () => {
     const { setToken } = useAuthStore();
 
     const handleRegistroCientifico = () =>{
-        console.log("Creando registro 2");
         router.push({
             pathname: "src/screens/RegistroUsuario/RegistroUsuarioPage"
         });

@@ -5,11 +5,15 @@ import MenuPrincipalStyle from "./MenuPrincipal.style";
 import { AntDesign } from "@expo/vector-icons";
 import RecommendationsPage from "varaapplib/components/Recommendations/RecommendationsPage";
 import {AvisoForm} from "varaapplib/components/AvisoForm/AvisoForm";
+import {router, useRouter} from "expo-router";
 
 const Avisos = () => {
+    const router = useRouter();
 
     const handleAgregarAviso = () => {
-        console.log("Agregar nuevo aviso");
+        router.push({
+            pathname: "src/screens/RegistroAviso/RegistroAvisoPage"
+        });
     };
 
     return (
