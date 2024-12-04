@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import {ScrollView, View} from "react-native";
-import {AvisoForm} from "varaapplib/components/AvisoForm/AvisoForm";
-import {Ionicons} from "@expo/vector-icons";
+import { ScrollView, View } from "react-native";
+import { AvisoForm } from "varaapplib/components/AvisoForm/AvisoForm";
+import { Ionicons } from "@expo/vector-icons";
 import CustomizableHeader from "varaapplib/components/CustomizableHeader/CustomizableHeader";
-import {useRouter} from "expo-router";
+import { useRouter } from "expo-router";
 
 const RegistroAvisoPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
