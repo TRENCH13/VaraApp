@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import {Alert, SafeAreaView, ScrollView, View} from "react-native";
+import {Alert, SafeAreaView, ScrollView, View, Text } from "react-native";
 import {AvisoForm} from "varaapplib/components/AvisoForm/AvisoForm";
 import { Ionicons } from "@expo/vector-icons";
 import CustomizableHeader from "varaapplib/components/CustomizableHeader/CustomizableHeader";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {RegistroAvisoPageStyle} from "./RegistroAvisoPage.style";
 
 const RegistroAvisoPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
@@ -38,6 +39,13 @@ const RegistroAvisoPage: React.FC = () => {
                         color="black"
                         onPress={handleBack}
                     />
+                }
+                centerComponent={
+                    <Text
+                        style={RegistroAvisoPageStyle.headerText}
+                    >
+                        Registro de Aviso
+                    </Text>
                 }
                 rightComponent={<View style={{ height: 24, width: 24 }}></View>}
             />
