@@ -9,7 +9,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import LoginPageStyle from "./LoginPage.style";
 import useAuthStore from "../../hooks/useStore";
 
-
 const LoginPage: React.FC = () => {
     const router = useRouter();
 

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { ScrollView, View } from "react-native";
-import { AvisoForm } from "varaapplib/components/AvisoForm/AvisoForm";
+import {Alert, SafeAreaView, ScrollView, View} from "react-native";
+import {AvisoForm} from "varaapplib/components/AvisoForm/AvisoForm";
 import { Ionicons } from "@expo/vector-icons";
 import CustomizableHeader from "varaapplib/components/CustomizableHeader/CustomizableHeader";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const RegistroAvisoPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
@@ -12,14 +13,24 @@ const RegistroAvisoPage: React.FC = () => {
         router.back();
     };
 
-    const onSubmitData = () => {
-        console.log("Registro Aviso");
+    const onSubmitData = async (data: any) => {
+        try {
+            const storedData = await AsyncStorage.getItem("avisos");
+            const avisos = storedData ? JSON.parse(storedData) : [];
+            avisos.push(data);
+            await AsyncStorage.setItem("avisos", JSON.stringify(avisos));
+            Alert.alert("Aviso registrado con éxito")
+            router.back();
+            console.log("Aviso registrado con éxito:", data);
+        } catch (error) {
+            console.error("Error al guardar el aviso:", error);
+        }
     }
 
     return (
-        <ScrollView style={{flex: 1}}>
+        <View style={{flex: 1, backgroundColor: "#fff"}}>
             <CustomizableHeader
-                containerStyle={{ backgroundColor: "#fff" }}
+                containerStyle={{ backgroundColor: "#fff"}}
                 leftComponent={
                     <Ionicons
                         name="arrow-back"
@@ -30,13 +41,14 @@ const RegistroAvisoPage: React.FC = () => {
                 }
                 rightComponent={<View style={{ height: 24, width: 24 }}></View>}
             />
-            <AvisoForm
-                onSubmitData={onSubmitData}
-                loading={loading}
-                setLoading={setLoading}
-                showEspecie={false}
-            />
-        </ScrollView>
+            <View style={{ height: "94%" }}>
+                <AvisoForm
+                    onSubmitData={onSubmitData}
+                    loading={loading}
+                    setLoading={setLoading}
+                ></AvisoForm>
+            </View>
+        </View>
     );
 }
 

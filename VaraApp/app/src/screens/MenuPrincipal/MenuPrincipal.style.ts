@@ -27,7 +27,7 @@ export const MenuPrincipalStyle = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        padding: 20,
+        marginTop: 20
     },
     contentText: {
         fontSize: 18,
@@ -54,8 +54,6 @@ export const MenuPrincipalStyle = StyleSheet.create({
     },
     floatingButton: {
         position: "absolute",
-        bottom: 2,
-        right: -180,
         backgroundColor: "white",
         borderRadius: 50,
         padding: 10,
@@ -64,6 +62,35 @@ export const MenuPrincipalStyle = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
+    },
+
+    floatingButtonContainer: {
+        position: "absolute",
+        bottom: 85,
+        right: 60,
+    },
+
+    card: {
+        marginBottom: 20,
+        padding: 20,
+        borderRadius: 10,
+        backgroundColor: "#f8f8f8",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 3,
+        width: 345
+    },
+    cardTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 13,
+        textAlign: "center",
+    },
+    cardText: {
+        fontSize: 14,
+        marginBottom: 5,
     },
 })
 
