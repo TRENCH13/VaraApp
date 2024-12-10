@@ -3544,6 +3544,11 @@ expo-asset@~11.0.1:
     invariant "^2.2.4"
     md5-file "^3.2.3"
 
+expo-blur@^14.0.1:
+  version "14.0.1"
+  resolved "https://registry.npmjs.org/expo-blur/-/expo-blur-14.0.1.tgz"
+  integrity sha512-3Q6jFBLbY8n2vwk28ycUC+eIlVhnlqwkXUKk/Lfaj+SGV3AZMQyrixe7OYwJdUfwqETBrnYYMB6uNrJzOSbG+g==
+
 expo-camera@~16.0.5:
   version "16.0.6"
   resolved "https://registry.npmjs.org/expo-camera/-/expo-camera-16.0.6.tgz"

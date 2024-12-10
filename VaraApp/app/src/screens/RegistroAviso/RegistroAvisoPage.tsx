@@ -20,7 +20,7 @@ const RegistroAvisoPage: React.FC = () => {
             const avisos = storedData ? JSON.parse(storedData) : [];
             avisos.push(data);
             await AsyncStorage.setItem("avisos", JSON.stringify(avisos));
-            Alert.alert("Aviso registrado con éxito")
+            Alert.alert("Aviso registrado con éxito" ,"Ahora puedes sincronizarlo con Varaweb")
             router.back();
             console.log("Aviso registrado con éxito:", data);
         } catch (error) {

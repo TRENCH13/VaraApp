@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {Pressable, View, Text, ScrollView, Alert} from "react-native";
+import {Pressable, View, Text, ScrollView, Alert, Modal} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import MenuPrincipalStyle from "./MenuPrincipal.style";
 import { AntDesign } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
 import RecommendationsPage from "varaapplib/components/Recommendations/RecommendationsPage";
 import {router, useRouter} from "expo-router";
 import menuPrincipalStyle from "./MenuPrincipal.style";
@@ -115,15 +116,21 @@ const Recomendaciones = () => {
 
 const MenuPrincipal: React.FC = () => {
     const [selectedTab, setSelectedTab] = useState<"Aviso" | "Recomendaciones">("Aviso");
+    const [modalVisible, setModalVisible] = useState(false);
 
     const handleSincronizarVaraWeb = () => {
         console.log("Sincronización presionada");
     }
 
     const handleConfiguracion = () => {
-        console.log("Configuración presionada");
+        router.push({
+            pathname: "src/screens/Configuracion/ConfiguracionPage"
+        });
     };
 
+    const toggleModal = () => {
+        setModalVisible(!modalVisible);
+    };
 
     return (
       <LinearGradient
@@ -136,16 +143,44 @@ const MenuPrincipal: React.FC = () => {
                   style={MenuPrincipalStyle.headerButton}
                   onPress={handleSincronizarVaraWeb}
               >
-                  <AntDesign name="cloudupload" size={30} color="white" />
+                  <AntDesign name="cloudupload" size={28} color="white" />
               </Pressable>
               <Text style={MenuPrincipalStyle.headerText}>VaraApp</Text>
               <Pressable
                   style={MenuPrincipalStyle.headerButton}
+                  onPress={toggleModal}
+              >
+                  <AntDesign name="infocirlceo" size={26} color="white" />
+              </Pressable>
+              <Pressable
+                  style={MenuPrincipalStyle.headerButton}
                   onPress={handleConfiguracion}
               >
-                  <AntDesign name="setting" size={30} color="white" />
+                  <AntDesign name="setting" size={28} color="white" />
               </Pressable>
           </View>
+          {/* MODAL */}
+          <Modal visible={modalVisible} transparent animationType="fade">
+              <BlurView intensity={50} style={MenuPrincipalStyle.blurBackground}>
+                  <View style={MenuPrincipalStyle.modalContent}>
+                      <Text style={MenuPrincipalStyle.modalTitle}>Bienvenido a VaraApp</Text>
+                      <Text style={MenuPrincipalStyle.modalText}></Text>
+                      <Text style={MenuPrincipalStyle.modalText}>- Para agregar un aviso, presiona el botón "+" en la esquina inferior.</Text>
+                      <Text style={MenuPrincipalStyle.modalText}></Text>
+                      <Text style={MenuPrincipalStyle.modalText}>- Para ver los detalles de tu aviso, presiona sobre el rectángulo del aviso que quieras revisar.</Text>
+                      <Text style={MenuPrincipalStyle.modalText}></Text>
+                      <Text style={MenuPrincipalStyle.modalText}>- Para eliminar un aviso que aún no has subido, mantén presionado el rectángulo del aviso que desees.</Text>
+                      <Text style={MenuPrincipalStyle.modalText}></Text>
+                      <Text style={MenuPrincipalStyle.modalText}>- De lado derecho dentro del rectángulo de tu aviso, habrá un símbolo indicando si tu aviso está o no está sincronizado con VaraWeb </Text>
+                      <Text style={MenuPrincipalStyle.modalText}></Text>
+                      <Text style={MenuPrincipalStyle.modalText}>- Para eliminar un aviso que aún no has subido, mantén presionado el rectángulo del aviso que desees.</Text>
+                      <Pressable style={MenuPrincipalStyle.closeButton} onPress={toggleModal}>
+                          <Text style={MenuPrincipalStyle.closeButtonText}>Entendido</Text>
+                      </Pressable>
+                  </View>
+              </BlurView>
+          </Modal>
+
           {/* CONTENIDO */}
           <View
               style={MenuPrincipalStyle.content}
