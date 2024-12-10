@@ -74,13 +74,16 @@ const Avisos = () => {
                        >
                            <Text style={MenuPrincipalStyle.cardTitle}>Aviso #{index + 1}</Text>
                            <Text style={MenuPrincipalStyle.cardText}>
-                               Fecha: {aviso.FechaDeAvistamiento}
+                               <Text style={{ fontWeight: "bold" }}> Fecha: </Text>
+                               <Text style={MenuPrincipalStyle.cardText}>{aviso.FechaDeAvistamiento}</Text>
                            </Text>
                            <Text style={MenuPrincipalStyle.cardText}>
-                               Latitud: {aviso.Latitud}
+                               <Text style={{ fontWeight: "bold" }}> Animales Avistados:  </Text>
+                               <Text style={MenuPrincipalStyle.cardText}>{aviso.CantidadDeAnimales}</Text>
                            </Text>
                            <Text style={MenuPrincipalStyle.cardText}>
-                               Longitud: {aviso.Longitud}
+                               <Text style={{ fontWeight: "bold" }}> Fotografía:  </Text>
+                               <Text style={MenuPrincipalStyle.cardText}>{aviso.Fotografia ? "Contiene fotografía" : "No contiene fotografía"}</Text>
                            </Text>
                        </Pressable>
                    ))

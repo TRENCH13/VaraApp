@@ -83,13 +83,13 @@ export const MenuPrincipalStyle = StyleSheet.create({
         width: 345
     },
     cardTitle: {
-        fontSize: 18,
+        fontSize: 19,
         fontWeight: "bold",
         marginBottom: 13,
         textAlign: "center",
     },
     cardText: {
-        fontSize: 14,
+        fontSize: 16,
         marginBottom: 5,
     },
 })
