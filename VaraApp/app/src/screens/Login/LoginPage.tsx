@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import {View, Alert, Pressable, Text} from "react-native";
 import { useRouter } from "expo-router";
+import {View, Alert, Pressable, Text, TouchableWithoutFeedback, Keyboard} from "react-native";
+import { useState } from "react";
 import LoginForm from "varaapplib/components/LoginForm/LoginForm";
-import { AxiosError } from "axios";
 import {Login} from "../../services/AuthServices";
-import {LoginResponse} from "../../services/AuthServiceInterfaces";
+import {LoginResponse, LoginViewModel} from "../../services/AuthServiceInterfaces";
 import { LinearGradient } from "expo-linear-gradient";
 import LoginPageStyle from "./LoginPage.style";
 import useAuthStore from "../../hooks/useStore";
@@ -26,13 +25,13 @@ const LoginPage: React.FC = () => {
 
     const handleLogin = async () => {
         setLoading(true);
-
         try {
-            const respuesta: LoginResponse = await Login({
+            const loginData: LoginViewModel = {
                 CorreoElectronico: email,
                 Contraseña: password
-            });
+            }
 
+            const respuesta = await Login(loginData);
             if (respuesta.error) {
                 Alert.alert("Error", "El correo o la contraseña son incorrectos.");
                 return;
@@ -42,19 +41,22 @@ const LoginPage: React.FC = () => {
             Alert.alert("Inicio de sesión exitoso", "Bienvenido de nuevo!");
             console.log("Token:", respuesta.data.token);
             setToken(respuesta.data.token);
-            router.push({
+            router.navigate({
                 pathname: "src/screens/MenuPrincipal/MenuPrincipal"
             });
 
 
         }catch (error){
-            if(error instanceof AxiosError){
-                Alert.alert("No se ha podido iniciar sesión", error.message);
-            }
-        }finally {
+            Alert.alert(
+                "Error en el servidor",
+                "Contacte al administrador del servidor"
+            );
             setLoading(false);
+        } finally {
+            setLoading(false)
         }
     };
+
 
     return (
         <View style={{ flex: 1 }}>

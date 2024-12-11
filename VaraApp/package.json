@@ -9,23 +9,28 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "^2.1.0",
-    "expo": "^52.0.15",
+    "@react-native-async-storage/async-storage": "^1.23.1",
+    "axios": "^1.7.4",
+    "expo": "^52.0.18",
     "expo-blur": "^14.0.1",
-    "expo-router": "^4.0.11",
+    "expo-linear-gradient": "~14.0.1",
+    "expo-localization": "~16.0.0",
+    "expo-router": "~4.0.7",
     "expo-status-bar": "~2.0.0",
     "react": "18.3.1",
-    "react-native": "^0.76.3",
-    "react-native-gesture-handler": "^2.21.2",
-    "react-native-reanimated": "^3.16.3",
+    "react-dom": "18.3.1",
+    "react-hook-form": "^7.53.1",
+    "react-native": "^0.76.2",
+    "react-native-basic-carousel": "^1.1.2",
+    "react-native-localization": "^2.3.2",
     "react-native-safe-area-context": "^4.14.0",
-    "react-native-screens": "^4.3.0",
-    "varaapplib": "^1.0.12"
+    "varaapplib": "latest"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "^18.3.13",
     "typescript": "^5.7.2"
   },
+  "author": "Javier Durán Torres",
   "private": true
 }
