@@ -66,8 +66,19 @@ export const MenuPrincipalStyle = StyleSheet.create({
 
     floatingButtonContainer: {
         position: "absolute",
-        bottom: 85,
-        right: 60,
+        bottom: 40, // Espaciado desde el fondo
+        right: 20, // Espaciado desde la derecha
+        zIndex: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "white", // Mantén el fondo para claridad
+        borderRadius: 50,
+        padding: 10, // Espaciado interno para darle más aire
+        shadowColor: "#000", // Sombra para que destaque
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5, // Sombra en Android
     },
 
     card: {
@@ -132,6 +143,14 @@ export const MenuPrincipalStyle = StyleSheet.create({
         color: "white",
         fontSize: 14,
         fontWeight: "bold",
+    },
+    withCardsPosition: {
+        bottom: 40,
+        right: 25,
+    },
+    noCardsPosition: {
+        bottom: 40,
+        right: -60,
     },
 })
 

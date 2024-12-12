@@ -64,7 +64,10 @@ const Avisos = () => {
     };
     return (
        <View style={{ flex: 1}}>
-           <ScrollView style={{ flex: 1 }}>
+           <ScrollView
+               style={{ flex: 1 }}
+               contentContainerStyle={{ paddingBottom: 120, paddingHorizontal: 10 }}
+           >
                {avisos.length > 0 ? (
                    avisos.map((aviso, index) => (
                        <Pressable
@@ -94,9 +97,16 @@ const Avisos = () => {
                    </Text>
                )}
            </ScrollView>
-           <View style={MenuPrincipalStyle.floatingButtonContainer}>
+           <View
+               style={[
+                   MenuPrincipalStyle.floatingButtonContainer,
+                   avisos.length > 0
+                       ? MenuPrincipalStyle.withCardsPosition
+                       : MenuPrincipalStyle.noCardsPosition,
+               ]}
+           >
                <Pressable
-                   style={MenuPrincipalStyle.floatingButton}
+                   style={[MenuPrincipalStyle.floatingButton]}
                    onPress={handleAgregarAviso}
                >
                    <AntDesign name="pluscircle" size={50} color="#024b7d" />
