@@ -16,12 +16,20 @@ const Avisos = () => {
 
     const borrarAviso = async (index: number) => {
         console.log(index);
+        try{
+            const nuevosAvisos = avisos.filter((_, i) => i !== index);
+            setAvisos(nuevosAvisos);
+            await AsyncStorage.setItem("avisos", JSON.stringify(nuevosAvisos));
+            Alert.alert("Tu aviso se borró correctamente", "Ahora tu lista de avisos se ha actualizado")
+        }catch (error){
+            console.log("Error al borrar el aviso: ", error);
+        }
     };
 
     const handleLongPress = (index: number) => {
         Alert.alert(
-            "Borrar Aviso",
-            "¿Estás seguro de que deseas borrar este aviso?",
+            "¿Estás seguro de borrar este archivo?",
+            "Este aviso estaba alojado localmente y no lo podrás recuperar",
             [
                 {
                     text: "Cancelar",
@@ -42,6 +50,7 @@ const Avisos = () => {
             if (storedData) {
                 const parsedData = JSON.parse(storedData);
                 setAvisos(parsedData);
+
             } else {
                 setAvisos([]);
             }
@@ -69,28 +78,37 @@ const Avisos = () => {
                contentContainerStyle={{ paddingBottom: 120, paddingHorizontal: 10 }}
            >
                {avisos.length > 0 ? (
-                   avisos.map((aviso, index) => (
-                       <Pressable
-                           key={index}
-                           style={MenuPrincipalStyle.card}
-                           onPress={() => handleCardPress(aviso)}
-                           onLongPress={() => handleLongPress(index)}
-                       >
-                           <Text style={MenuPrincipalStyle.cardTitle}>Aviso #{index + 1}</Text>
-                           <Text style={MenuPrincipalStyle.cardText}>
-                               <Text style={{ fontWeight: "bold" }}> Fecha: </Text>
-                               <Text style={MenuPrincipalStyle.cardText}>{aviso.FechaDeAvistamiento}</Text>
-                           </Text>
-                           <Text style={MenuPrincipalStyle.cardText}>
-                               <Text style={{ fontWeight: "bold" }}> Animales Avistados:  </Text>
-                               <Text style={MenuPrincipalStyle.cardText}>{aviso.CantidadDeAnimales}</Text>
-                           </Text>
-                           <Text style={MenuPrincipalStyle.cardText}>
-                               <Text style={{ fontWeight: "bold" }}> Fotografía:  </Text>
-                               <Text style={MenuPrincipalStyle.cardText}>{aviso.Fotografia ? "Contiene fotografía" : "No contiene fotografía"}</Text>
-                           </Text>
-                       </Pressable>
-                   ))
+                   avisos
+                       .slice() // Crea una copia del arreglo original
+                       .reverse() // Invierte el orden para mostrar del más nuevo al más viejo
+                       .map((aviso, index) => (
+                           <Pressable
+                               key={avisos.length - index} // Usa el índice invertido
+                               style={MenuPrincipalStyle.card}
+                               onPress={() => handleCardPress(aviso)}
+                               onLongPress={() => handleLongPress(avisos.length - 1 - index)} // Mapea al índice original
+                           >
+                               <Text style={MenuPrincipalStyle.cardTitle}>
+                                   Aviso #{avisos.length - index} {/* Número del orden original */}
+                               </Text>
+                               <View
+                                   style={MenuPrincipalStyle.cardContent}
+                               >
+                                   <Text style={MenuPrincipalStyle.cardText}>
+                                       <Text style={{ fontWeight: "bold" }}> Fecha: </Text>
+                                       {aviso.FechaDeAvistamiento}
+                                   </Text>
+                                   <Text style={MenuPrincipalStyle.cardText}>
+                                       <Text style={{ fontWeight: "bold" }}> Animales Avistados: </Text>
+                                       {aviso.CantidadDeAnimales}
+                                   </Text>
+                                   <Text style={MenuPrincipalStyle.cardText}>
+                                       <Text style={{ fontWeight: "bold" }}> Fotografía: </Text>
+                                       {aviso.Fotografia ? "Contiene fotografía" : "No contiene fotografía"}
+                                   </Text>
+                               </View>
+                           </Pressable>
+                       ))
                ) : (
                    <Text style={{ textAlign: "center", marginTop: 20 }}>
                        No hay avisos registrados.
@@ -128,10 +146,6 @@ const MenuPrincipal: React.FC = () => {
     const [selectedTab, setSelectedTab] = useState<"Aviso" | "Recomendaciones">("Aviso");
     const [modalVisible, setModalVisible] = useState(false);
 
-    const handleSincronizarVaraWeb = () => {
-        console.log("Sincronización presionada");
-    }
-
     const handleConfiguracion = () => {
         router.push({
             pathname: "src/screens/Configuracion/ConfiguracionPage"
@@ -151,22 +165,16 @@ const MenuPrincipal: React.FC = () => {
           <View style={MenuPrincipalStyle.header}>
               <Pressable
                   style={MenuPrincipalStyle.headerButton}
-                  onPress={handleSincronizarVaraWeb}
-              >
-                  <AntDesign name="cloudupload" size={28} color="white" />
-              </Pressable>
-              <Text style={MenuPrincipalStyle.headerText}>VaraApp</Text>
-              <Pressable
-                  style={MenuPrincipalStyle.headerButton}
                   onPress={toggleModal}
               >
                   <AntDesign name="infocirlceo" size={26} color="white" />
               </Pressable>
+              <Text style={MenuPrincipalStyle.headerText}>VaraApp</Text>
               <Pressable
                   style={MenuPrincipalStyle.headerButton}
                   onPress={handleConfiguracion}
               >
-                  <AntDesign name="setting" size={28} color="white" />
+                  <AntDesign name="setting" size={31} color="white" />
               </Pressable>
           </View>
           {/* MODAL */}

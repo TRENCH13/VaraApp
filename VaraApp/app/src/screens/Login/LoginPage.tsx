@@ -38,7 +38,6 @@ const LoginPage: React.FC = () => {
             }
 
             // Si la respuesta es exitosa, redirigir
-            Alert.alert("Inicio de sesión exitoso", "Bienvenido de nuevo!");
             console.log("Token:", respuesta.data.token);
             setToken(respuesta.data.token);
             router.navigate({

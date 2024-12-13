@@ -103,6 +103,9 @@ export const MenuPrincipalStyle = StyleSheet.create({
         fontSize: 16,
         marginBottom: 5,
     },
+    cardContent:{
+        alignItems: "flex-start"
+    },
     blurBackground: {
         flex: 1,
         justifyContent: "center",

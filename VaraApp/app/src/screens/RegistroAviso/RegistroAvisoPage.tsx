@@ -72,9 +72,9 @@ const RegistroAvisoPage: React.FC = () => {
                         console.log("Valores cambiados:", values);
                     }}
                     data={{
-                        Nombre: "Pablo",
-                        Telefono: "2282522839",
-                        Fotografia: "https://via.placeholder.com/300",
+                        Nombre: "",
+                        Telefono: "",
+                        Fotografia: "",
                         FechaDeAvistamiento: new Date().toISOString().split("T")[0],
                         Sustrato: 1,
                         FacilAcceso: false,
