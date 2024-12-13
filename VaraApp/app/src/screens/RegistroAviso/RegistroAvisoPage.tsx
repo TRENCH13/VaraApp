@@ -8,28 +8,48 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {RegistroAvisoPageStyle} from "./RegistroAvisoPage.style";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {AvisoValues} from "varaapplib/components/AvisoForm/types";
+import {useSearchParams} from "expo-router/build/hooks";
+import { v4 as uuidv4 } from 'uuid';
 
 const RegistroAvisoPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const aviso = searchParams.get("aviso");
+    const avisoData = aviso ? JSON.parse(aviso) : null;
+
     const handleBack = () => {
         router.back();
     };
+
+    const generateId = () => `aviso_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
 
     const onSubmitData = async (data: any) => {
         console.log("Datos enviados:", data);
         try {
             const storedData = await AsyncStorage.getItem("avisos");
             const avisos = storedData ? JSON.parse(storedData) : [];
-            avisos.push(data);
+            //Sección de la edición de un aviso
+            if(avisoData){
+                //Edición
+                const index = avisos.findIndex((a: any) => a.id === avisoData.id);
+                if (index !== -1) {
+                    avisos[index] = { ...data, id: avisoData.id };
+                }
+            } else{
+                //Registro
+                const newAviso = { id: generateId(), ...data };
+                avisos.push(newAviso);
+            }
+
             await AsyncStorage.setItem("avisos", JSON.stringify(avisos));
 
             Alert.alert(
-                "Aviso registrado con éxito" ,
-                "Ahora puedes sincronizarlo con Varaweb"
+                avisoData ? "Aviso actualizado con éxito" : "Aviso registrado con éxito",
+                avisoData ? "Los cambios se han guardado." : "Ahora puedes sincronizarlo con Varaweb o editarlo"
             );
 
-            console.log("Aviso registrado con éxito:", data);
+            console.log(avisoData ? "Aviso actualizado:" : "Aviso registrado:", data);
             setTimeout(() => {
                 router.back();
             }, 100);
@@ -58,7 +78,7 @@ const RegistroAvisoPage: React.FC = () => {
                     <Text
                         style={RegistroAvisoPageStyle.headerText}
                     >
-                        Registro de Aviso
+                        {avisoData ? "Editar Aviso" : "Registro de Aviso"}
                     </Text>
                 }
                 rightComponent={<View style={{ height: 24, width: 24 }}></View>}
@@ -72,21 +92,21 @@ const RegistroAvisoPage: React.FC = () => {
                         console.log("Valores cambiados:", values);
                     }}
                     data={{
-                        Nombre: "",
-                        Telefono: "",
-                        Fotografia: "",
-                        FechaDeAvistamiento: new Date().toISOString().split("T")[0],
-                        Sustrato: 1,
-                        FacilAcceso: false,
-                        Acantilado: false,
-                        LugarDondeSeVio: 0,
-                        TipoDeAnimal: 0,
-                        Observaciones: "",
-                        CondicionDeAnimal: 2,
-                        CantidadDeAnimales: "",
-                        InformacionDeLocalizacion: "",
-                        Latitud: "",
-                        Longitud: "",
+                        Nombre: avisoData?.Nombre || "",
+                        Telefono: avisoData?.Telefono || "",
+                        Fotografia: avisoData?.Fotografia || "",
+                        FechaDeAvistamiento: avisoData?.FechaDeAvistamiento || new Date().toISOString().split("T")[0],
+                        Sustrato: avisoData?.Sustrato || 1,
+                        FacilAcceso: avisoData?.FacilAcceso || false,
+                        Acantilado: avisoData?.Acantilado || false,
+                        LugarDondeSeVio: avisoData?.LugarDondeSeVio || 0,
+                        TipoDeAnimal: avisoData?.TipoDeAnimal || 0,
+                        Observaciones: avisoData?.Observaciones || "",
+                        CondicionDeAnimal: avisoData?.CondicionDeAnimal || 2,
+                        CantidadDeAnimales: avisoData?.CantidadDeAnimales || "",
+                        InformacionDeLocalizacion: avisoData?.InformacionDeLocalizacion || "",
+                        Latitud: avisoData?.Latitud || "",
+                        Longitud: avisoData?.Longitud || "",
                     }}
                 ></AvisoForm>
             </View>

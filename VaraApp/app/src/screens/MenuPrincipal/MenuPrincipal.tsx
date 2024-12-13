@@ -10,14 +10,16 @@ import menuPrincipalStyle from "./MenuPrincipal.style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialCard from "varaapplib/components/MaterialCard/MaterialCard";
 
-const Avisos = () => {
+interface AvisosProps {
+    id?: string; // Define los props que realmente necesitas
+}
+const Avisos: React.FC<AvisosProps> = ({ id }) => {
     const [avisos, setAvisos] = useState<any[]>([]);
     const router = useRouter();
 
-    const borrarAviso = async (index: number) => {
-        console.log(index);
+    const borrarAviso = async (id: string) => {
         try{
-            const nuevosAvisos = avisos.filter((_, i) => i !== index);
+            const nuevosAvisos = avisos.filter((aviso) => aviso.id !== id); // Filtrado por el ID de uuid
             setAvisos(nuevosAvisos);
             await AsyncStorage.setItem("avisos", JSON.stringify(nuevosAvisos));
             Alert.alert("Tu aviso se borró correctamente", "Ahora tu lista de avisos se ha actualizado")
@@ -26,7 +28,7 @@ const Avisos = () => {
         }
     };
 
-    const handleLongPress = (index: number) => {
+    const handleLongPress = (id: string) => {
         Alert.alert(
             "¿Estás seguro de borrar este archivo?",
             "Este aviso estaba alojado localmente y no lo podrás recuperar",
@@ -38,7 +40,7 @@ const Avisos = () => {
                 {
                     text: "Eliminar",
                     style: "destructive",
-                    onPress: () => borrarAviso(index),
+                    onPress: () => borrarAviso(id),
                 },
             ]
         );
@@ -69,7 +71,10 @@ const Avisos = () => {
         });
     };
     const handleCardPress = (aviso: any) => {
-        console.log("Detalles del aviso:", aviso);
+        router.push({
+            pathname: "src/screens/RegistroAviso/RegistroAvisoPage",
+            params: { aviso: JSON.stringify(aviso) }, // Pasa el aviso como string
+        });
     };
     return (
        <View style={{ flex: 1}}>
@@ -79,17 +84,17 @@ const Avisos = () => {
            >
                {avisos.length > 0 ? (
                    avisos
-                       .slice() // Crea una copia del arreglo original
-                       .reverse() // Invierte el orden para mostrar del más nuevo al más viejo
+                       .slice()
+                       .reverse()
                        .map((aviso, index) => (
                            <Pressable
-                               key={avisos.length - index} // Usa el índice invertido
+                               key={aviso.id} // Asegúrate de que cada aviso tiene un campo `id`
                                style={MenuPrincipalStyle.card}
                                onPress={() => handleCardPress(aviso)}
-                               onLongPress={() => handleLongPress(avisos.length - 1 - index)} // Mapea al índice original
+                               onLongPress={() => handleLongPress(aviso.id)} // Pasa el `id` al manejar eventos
                            >
                                <Text style={MenuPrincipalStyle.cardTitle}>
-                                   Aviso #{avisos.length - index} {/* Número del orden original */}
+                                   Aviso #{ avisos.length -index } {/* Número del orden original */}
                                </Text>
                                <View
                                    style={MenuPrincipalStyle.cardContent}
@@ -185,11 +190,9 @@ const MenuPrincipal: React.FC = () => {
                       <Text style={MenuPrincipalStyle.modalText}></Text>
                       <Text style={MenuPrincipalStyle.modalText}>- Para agregar un aviso, presiona el botón "+" en la esquina inferior.</Text>
                       <Text style={MenuPrincipalStyle.modalText}></Text>
-                      <Text style={MenuPrincipalStyle.modalText}>- Para ver los detalles de tu aviso, presiona sobre el rectángulo del aviso que quieras revisar.</Text>
+                      <Text style={MenuPrincipalStyle.modalText}>- Para identificar si tu aviso está subido o no, dentro del rectángulo del aviso al lado derecho aparecerá una nube si se encuentra subido a VaraWeb o una nube tachada si no se ha subido.</Text>
                       <Text style={MenuPrincipalStyle.modalText}></Text>
-                      <Text style={MenuPrincipalStyle.modalText}>- Para eliminar un aviso que aún no has subido, mantén presionado el rectángulo del aviso que desees.</Text>
-                      <Text style={MenuPrincipalStyle.modalText}></Text>
-                      <Text style={MenuPrincipalStyle.modalText}>- De lado derecho dentro del rectángulo de tu aviso, habrá un símbolo indicando si tu aviso está o no está sincronizado con VaraWeb </Text>
+                      <Text style={MenuPrincipalStyle.modalText}>- Para ver los detalles de tu aviso, presiona sobre el rectángulo del aviso que quieras revisar, si está subido a VaraWeb no podrás editar.</Text>
                       <Text style={MenuPrincipalStyle.modalText}></Text>
                       <Text style={MenuPrincipalStyle.modalText}>- Para eliminar un aviso que aún no has subido, mantén presionado el rectángulo del aviso que desees.</Text>
                       <Pressable style={MenuPrincipalStyle.closeButton} onPress={toggleModal}>

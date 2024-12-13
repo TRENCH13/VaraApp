@@ -24,6 +24,7 @@
     "react-native-basic-carousel": "^1.1.2",
     "react-native-localization": "^2.3.2",
     "react-native-safe-area-context": "^4.14.0",
+    "uuid": "^11.0.3",
     "varaapplib": "latest"
   },
   "devDependencies": {
