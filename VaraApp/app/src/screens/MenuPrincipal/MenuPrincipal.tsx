@@ -2,16 +2,14 @@ import React, {useEffect, useState} from "react";
 import {Pressable, View, Text, ScrollView, Alert, Modal} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import MenuPrincipalStyle from "./MenuPrincipal.style";
-import { AntDesign } from "@expo/vector-icons";
+import {AntDesign, Ionicons} from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import RecommendationsPage from "varaapplib/components/Recommendations/RecommendationsPage";
 import {router, useRouter} from "expo-router";
-import menuPrincipalStyle from "./MenuPrincipal.style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import MaterialCard from "varaapplib/components/MaterialCard/MaterialCard";
 
 interface AvisosProps {
-    id?: string; // Define los props que realmente necesitas
+    id?: string;
 }
 const Avisos: React.FC<AvisosProps> = ({ id }) => {
     const [avisos, setAvisos] = useState<any[]>([]);
@@ -26,6 +24,34 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
         }catch (error){
             console.log("Error al borrar el aviso: ", error);
         }
+    };
+
+    const subirAviso = async (id: string) => {
+        Alert.alert(
+            "¿Estás seguro?",
+            "Estás por subir tu aviso, una vez subido no podrás hacer cambios",
+            [
+                {
+                    text: "Cancelar",
+                    style: "cancel",
+                },
+                {
+                    text: "Subir",
+                    onPress: async () => {
+                        try {
+                            const nuevosAvisos = avisos.map((aviso) =>
+                                aviso.id === id ? { ...aviso, subido: true } : aviso
+                            );
+                            setAvisos(nuevosAvisos); // Actualiza el estado local
+                            await AsyncStorage.setItem("avisos", JSON.stringify(nuevosAvisos)); // Guarda en AsyncStorage
+                            Alert.alert("Aviso subido", "El aviso ahora está marcado como subido.");
+                        } catch (error) {
+                            console.error("Error al actualizar el aviso:", error);
+                        }
+                    },
+                },
+            ]
+        );
     };
 
     const handleLongPress = (id: string) => {
@@ -52,6 +78,7 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
             if (storedData) {
                 const parsedData = JSON.parse(storedData);
                 setAvisos(parsedData);
+                console.log(parsedData);
 
             } else {
                 setAvisos([]);
@@ -71,10 +98,17 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
         });
     };
     const handleCardPress = (aviso: any) => {
-        router.push({
-            pathname: "src/screens/RegistroAviso/RegistroAvisoPage",
-            params: { aviso: JSON.stringify(aviso) }, // Pasa el aviso como string
-        });
+        if(aviso.subido){
+            router.push({
+                pathname: "src/screens/ConsultaAvisoSubido/ConsultaAvisoSubidoPage",
+                params: { aviso: JSON.stringify(aviso) },
+            });
+        }else{
+            router.push({
+                pathname: "src/screens/RegistroAviso/RegistroAvisoPage",
+                params: { aviso: JSON.stringify(aviso) },
+            });
+        }
     };
     return (
        <View style={{ flex: 1}}>
@@ -89,9 +123,13 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
                        .map((aviso, index) => (
                            <Pressable
                                key={aviso.id} // Asegúrate de que cada aviso tiene un campo `id`
-                               style={MenuPrincipalStyle.card}
+                               style={[
+                                   MenuPrincipalStyle.card,
+                                   {
+                                       backgroundColor: aviso.subido ? "#efefef" : "white"
+                                   }
+                               ]}
                                onPress={() => handleCardPress(aviso)}
-                               onLongPress={() => handleLongPress(aviso.id)} // Pasa el `id` al manejar eventos
                            >
                                <Text style={MenuPrincipalStyle.cardTitle}>
                                    Aviso #{ avisos.length -index } {/* Número del orden original */}
@@ -112,6 +150,25 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
                                        {aviso.Fotografia ? "Contiene fotografía" : "No contiene fotografía"}
                                    </Text>
                                </View>
+                               {/* Ícono de basura */}
+                               <View style={{ position: "absolute", top: 10, left: 10 }}>
+                                   <Ionicons name="trash" size={28} color="red" onPress={() => handleLongPress(aviso.id)} />
+                               </View>
+
+                               {/* Ícono de nube */}
+                               <View style={{ position: "absolute", top: 10, right: 15 }}>
+                                   {aviso.subido ? (
+                                       <Ionicons name="cloud-done" size={24} color="black" />
+                                   ) : (
+                                       <Ionicons
+                                           name="cloud-offline" // Nube tachada
+                                           size={24}
+                                           color="gray"
+                                           onPress={() => subirAviso(aviso.id)} // Lógica al presionar
+                                       />
+                                   )}
+                               </View>
+
                            </Pressable>
                        ))
                ) : (

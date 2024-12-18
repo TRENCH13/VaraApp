@@ -1,62 +1,40 @@
-import React, { useState } from "react";
-import {Alert, View, Text,} from "react-native";
+import React from "react";
+import {Alert, Pressable, Text, View} from "react-native";
 import {AvisoForm} from "varaapplib/components/AvisoForm/AvisoForm";
-import { Ionicons } from "@expo/vector-icons";
-import CustomizableHeader from "varaapplib/components/CustomizableHeader/CustomizableHeader";
-import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {RegistroAvisoPageStyle} from "./RegistroAvisoPage.style";
-import { SafeAreaView } from "react-native-safe-area-context";
 import {AvisoValues} from "varaapplib/components/AvisoForm/types";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {Ionicons} from "@expo/vector-icons";
+import CustomizableHeader from "varaapplib/components/CustomizableHeader/CustomizableHeader";
+import {router} from "expo-router";
+import ConsultaAvisoSubidoPageStyle from "./ConsultaAvisoSubidoPage.style";
 import {useSearchParams} from "expo-router/build/hooks";
 
-const RegistroAvisoPage: React.FC = () => {
-    const [loading, setLoading] = useState(false);
-    const router = useRouter();
+const ConsultaAvisoSubidoPage: React.FC = () => {
+    const [loading, setLoading] = React.useState(false);
     const searchParams = useSearchParams();
     const aviso = searchParams.get("aviso");
     const avisoData = aviso ? JSON.parse(aviso) : null;
+    const CustomButton = ({ onPress }: { onPress?: () => void }) => (
+        <Pressable
+            onPress={onPress}
+            style={{
+                position: "absolute",
+                width: 0,
+                height: 0,
+                opacity: 0,
+            }}
+        ></Pressable>
+    );
+
+    const onSubmitData = async (data: any) => {
+        Alert.alert(
+            "No se puede modificar un aviso subido a Varaweb"
+        )
+    }
 
     const handleBack = () => {
         router.back();
     };
-
-    const generateId = () => `aviso_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
-
-    const onSubmitData = async (data: any) => {
-        console.log("Datos enviados:", data);
-        try {
-            const storedData = await AsyncStorage.getItem("avisos");
-            const avisos = storedData ? JSON.parse(storedData) : [];
-            //Sección de la edición de un aviso
-            if(avisoData){
-                //Edición
-                const index = avisos.findIndex((a: any) => a.id === avisoData.id);
-                if (index !== -1) {
-                    avisos[index] = { ...data, id: avisoData.id };
-                }
-            } else{
-                //Registro
-                const newAviso = { id: generateId(), subido: false, ...data };
-                avisos.push(newAviso);
-            }
-
-            await AsyncStorage.setItem("avisos", JSON.stringify(avisos));
-
-            Alert.alert(
-                avisoData ? "Aviso actualizado con éxito" : "Aviso registrado con éxito",
-                avisoData ? "Los cambios se han guardado." : "Ahora puedes sincronizarlo con Varaweb o editarlo"
-            );
-
-            console.log(avisoData ? "Aviso actualizado:" : "Aviso registrado:", data);
-            setTimeout(() => {
-                router.back();
-            }, 100);
-        } catch (error) {
-            console.error("Error al guardar el aviso:", error);
-        }
-    };
-
 
     return (
         <SafeAreaView
@@ -75,9 +53,9 @@ const RegistroAvisoPage: React.FC = () => {
                 }
                 centerComponent={
                     <Text
-                        style={RegistroAvisoPageStyle.headerText}
+                        style={ConsultaAvisoSubidoPageStyle.headerText}
                     >
-                        {avisoData ? "Editar Aviso" : "Registro de Aviso"}
+                        Consulta Aviso
                     </Text>
                 }
                 rightComponent={<View style={{ height: 24, width: 24 }}></View>}
@@ -85,11 +63,11 @@ const RegistroAvisoPage: React.FC = () => {
             <View style={{ height: "94%" }}>
                 <AvisoForm
                     onSubmitData={onSubmitData}
+                    showEspecie={false}
                     loading={loading}
                     setLoading={setLoading}
-                    onValuesChange={(values: Partial<AvisoValues>) => {
-                        console.log("Valores cambiados:", values);
-                    }}
+                    isDisabled={true}
+                    reactNodeButton={CustomButton}
                     data={{
                         Nombre: avisoData?.Nombre || "",
                         Telefono: avisoData?.Telefono || "",
@@ -107,10 +85,13 @@ const RegistroAvisoPage: React.FC = () => {
                         Latitud: avisoData?.Latitud || "",
                         Longitud: avisoData?.Longitud || "",
                     }}
+                    onValuesChange={(values: Partial<AvisoValues>) => {
+                        console.log("Valores cambiados:", values);
+                    }}
                 ></AvisoForm>
             </View>
         </SafeAreaView>
     );
 }
 
-export default RegistroAvisoPage;
+export default ConsultaAvisoSubidoPage;
