@@ -55,7 +55,7 @@ const ConsultaAvisoSubidoPage: React.FC = () => {
                     <Text
                         style={ConsultaAvisoSubidoPageStyle.headerText}
                     >
-                        Consulta Aviso
+                        Consulta tu Aviso
                     </Text>
                 }
                 rightComponent={<View style={{ height: 24, width: 24 }}></View>}

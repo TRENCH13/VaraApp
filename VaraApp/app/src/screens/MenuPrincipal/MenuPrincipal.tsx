@@ -28,7 +28,7 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
 
     const subirAviso = async (id: string) => {
         Alert.alert(
-            "¿Estás seguro?",
+            "¿Estás seguro de subir este aviso?",
             "Estás por subir tu aviso, una vez subido no podrás hacer cambios",
             [
                 {
@@ -44,7 +44,7 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
                             );
                             setAvisos(nuevosAvisos); // Actualiza el estado local
                             await AsyncStorage.setItem("avisos", JSON.stringify(nuevosAvisos)); // Guarda en AsyncStorage
-                            Alert.alert("Aviso subido", "El aviso ahora está marcado como subido.");
+                            Alert.alert("Aviso subido correctamente", "Tu aviso ya se encuentra dentro de VaraWeb");
                         } catch (error) {
                             console.error("Error al actualizar el aviso:", error);
                         }
@@ -78,7 +78,6 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
             if (storedData) {
                 const parsedData = JSON.parse(storedData);
                 setAvisos(parsedData);
-                console.log(parsedData);
 
             } else {
                 setAvisos([]);
@@ -152,7 +151,11 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
                                </View>
                                {/* Ícono de basura */}
                                <View style={{ position: "absolute", top: 10, left: 10 }}>
-                                   <Ionicons name="trash" size={28} color="red" onPress={() => handleLongPress(aviso.id)} />
+                                   {aviso.subido ? (
+                                       <></>
+                                   ) : (
+                                       <Ionicons name="trash" size={28} color="red" onPress={() => handleLongPress(aviso.id)} />
+                                   )}
                                </View>
 
                                {/* Ícono de nube */}

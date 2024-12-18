@@ -66,15 +66,15 @@ export const MenuPrincipalStyle = StyleSheet.create({
 
     floatingButtonContainer: {
         position: "absolute",
-        bottom: 40, // Espaciado desde el fondo
-        right: 20, // Espaciado desde la derecha
+        bottom: 40,
+        right: 20,
         zIndex: 10,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "white", // Mantén el fondo para claridad
+        backgroundColor: "white",
         borderRadius: 50,
-        padding: 10, // Espaciado interno para darle más aire
-        shadowColor: "#000", // Sombra para que destaque
+        padding: 10,
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
