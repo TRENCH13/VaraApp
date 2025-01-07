@@ -47,7 +47,9 @@ const RegistroUsuarioPage: React.FC = () => {
     }
 
     return (
-        <ScrollView style={{ flex: 1 }}>
+        <View
+            style={{ flex: 1 }}
+        >
             <CustomizableHeader
                 containerStyle={{ backgroundColor: "#fff" }}
                 leftComponent={
@@ -65,7 +67,7 @@ const RegistroUsuarioPage: React.FC = () => {
                 loading={loading}
                 setLoading={setLoading}
             />
-        </ScrollView>
+        </View>
     );
 };
 

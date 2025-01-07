@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import {View, Alert, Pressable, Text, TouchableWithoutFeedback, Keyboard} from "react-native";
-import { useState } from "react";
+import React, { useState } from "react";
 import LoginForm from "varaapplib/components/LoginForm/LoginForm";
 import {Login} from "../../services/AuthServices";
 import {LoginResponse, LoginViewModel} from "../../services/AuthServiceInterfaces";
@@ -17,6 +17,7 @@ const LoginPage: React.FC = () => {
 
     const { setToken } = useAuthStore();
 
+
     const handleRegistroCientifico = () =>{
         router.push({
             pathname: "src/screens/RegistroUsuario/RegistroUsuarioPage"
@@ -31,6 +32,7 @@ const LoginPage: React.FC = () => {
                 Contraseña: password
             }
 
+            console.log(loginData);
             const respuesta = await Login(loginData);
             if (respuesta.error) {
                 Alert.alert("Error", "El correo o la contraseña son incorrectos.");
@@ -38,23 +40,22 @@ const LoginPage: React.FC = () => {
             }
 
             // Si la respuesta es exitosa, redirigir
-            console.log("Token:", respuesta.data.token);
             setToken(respuesta.data.token);
             router.navigate({
                 pathname: "src/screens/MenuPrincipal/MenuPrincipal"
             });
 
-
         }catch (error){
             Alert.alert(
-                "Error en el servidor",
-                "Contacte al administrador del servidor"
+                "Error al iniciar sesión",
+                "Verifique sus credenciales"
             );
             setLoading(false);
         } finally {
             setLoading(false)
         }
     };
+
 
 
     return (
