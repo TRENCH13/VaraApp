@@ -1,13 +1,12 @@
 import { useRouter } from "expo-router";
-import {View, Alert, Pressable, Text, TouchableWithoutFeedback, Keyboard} from "react-native";
+import {View, Alert, Pressable, Text} from "react-native";
 import React, {useEffect, useState} from "react";
 import LoginForm from "varaapplib/components/LoginForm/LoginForm";
 import {Login} from "../../services/AuthServices";
-import {LoginResponse, LoginViewModel} from "../../services/AuthServiceInterfaces";
+import { LoginViewModel} from "../../services/AuthServiceInterfaces";
 import { LinearGradient } from "expo-linear-gradient";
 import LoginPageStyle from "./LoginPage.style";
 import useAuthStore from "../../hooks/useStore";
-import {set} from "react-hook-form";
 
 const LoginPage: React.FC = () => {
     const router = useRouter();

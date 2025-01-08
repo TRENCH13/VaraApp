@@ -19,6 +19,20 @@ export interface RegistroCientificoRequest {
     Origen: string;
 }
 
+export interface RegistroAvisoRequest {
+    Acantilado: string;
+    FacilAcceso: string;
+    LugarDondeSeVio: number;
+    Sustrato: number;
+    FechaDeAvistamiento: string;
+    Observaciones: string;
+    CondicionDeAnimal: number;
+    CantidadDeAnimales: number;
+    Latitud: number;
+    Longitud: number;
+    InformacionDeLocalizacion: string;
+}
+
 export interface LoginResponse {
     error: boolean;
     message: string[];
