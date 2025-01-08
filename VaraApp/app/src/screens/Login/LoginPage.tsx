@@ -67,10 +67,7 @@ const LoginPage: React.FC = () => {
 
             // Si la respuesta es exitosa
 
-            // Extraer el token y la fecha de expiración
             const { token, fecha_de_expiración } = respuesta.data;
-
-            // Guardar en AsyncStorage
             await AsyncStorage.setItem("TokenAuth", token);
             await AsyncStorage.setItem("FechaExpiracionToken", fecha_de_expiración);
 
