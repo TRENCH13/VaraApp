@@ -7,6 +7,7 @@ import { LoginViewModel} from "../../services/AuthServiceInterfaces";
 import { LinearGradient } from "expo-linear-gradient";
 import LoginPageStyle from "./LoginPage.style";
 import useAuthStore from "../../hooks/useStore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginPage: React.FC = () => {
     const router = useRouter();
@@ -58,7 +59,6 @@ const LoginPage: React.FC = () => {
                 Contraseña: password
             }
 
-            console.log(loginData);
             const respuesta = await Login(loginData);
             if (respuesta.error) {
                 Alert.alert("Error", "El correo o la contraseña son incorrectos.");
@@ -66,7 +66,10 @@ const LoginPage: React.FC = () => {
             }
 
             // Si la respuesta es exitosa, redirigir
-            setToken(respuesta.data.token);
+            //setToken(respuesta.data.token);
+            await AsyncStorage.setItem("token", JSON.stringify(respuesta.data)); // Guarda en AsyncStorage
+            const storedData = await AsyncStorage.getItem("token");
+            console.log("Token guardado en memoria: ", storedData);
             router.navigate({
                 pathname: "src/screens/MenuPrincipal/MenuPrincipal"
             });
