@@ -45,7 +45,7 @@ export const RegistroCientifico = async (
 };
 
 export const RegistroAviso = async (
-    data: RegistroAvisoRequest,
+    data: FormData,
     token: string,
 ) : Promise<ApiResponse> => {
     try {
@@ -54,7 +54,7 @@ export const RegistroAviso = async (
             data,
             {
                 headers:{
-                    "Content-Type": "application/json",
+                    "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${token}`,
                 }
             }

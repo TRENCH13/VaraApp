@@ -65,11 +65,15 @@ const LoginPage: React.FC = () => {
                 return;
             }
 
-            // Si la respuesta es exitosa, redirigir
-            //setToken(respuesta.data.token);
-            await AsyncStorage.setItem("token", JSON.stringify(respuesta.data)); // Guarda en AsyncStorage
-            const storedData = await AsyncStorage.getItem("token");
-            console.log("Token guardado en memoria: ", storedData);
+            // Si la respuesta es exitosa
+
+            // Extraer el token y la fecha de expiración
+            const { token, fecha_de_expiración } = respuesta.data;
+
+            // Guardar en AsyncStorage
+            await AsyncStorage.setItem("TokenAuth", token);
+            await AsyncStorage.setItem("FechaExpiracionToken", fecha_de_expiración);
+
             router.navigate({
                 pathname: "src/screens/MenuPrincipal/MenuPrincipal"
             });

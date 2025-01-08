@@ -7,6 +7,9 @@ import { BlurView } from "expo-blur";
 import RecommendationsPage from "varaapplib/components/Recommendations/RecommendationsPage";
 import {router, useRouter} from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {ApiResponse} from "../../services/AuthServiceInterfaces";
+import {RegistroAviso, RegistroCientifico} from "../../services/AuthServices";
+import api from "../../services/Api";
 
 interface AvisosProps {
     id?: string;
@@ -27,6 +30,22 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
     };
 
     const subirAviso = async (id: string) => {
+
+        const tokenGuardado = await AsyncStorage.getItem("TokenAuth");
+        const fechaExpiracionToken = await AsyncStorage.getItem("FechaExpiracionToken");
+
+        if (!tokenGuardado) {
+            Alert.alert("Error", "No se encontró un token válido, inicia sesión nuevamente.");
+            return;
+        }
+
+        const aviso = avisos.find((a) => a.id === id);
+
+        if (!aviso) {
+            Alert.alert("Error", "El aviso seleccionado no existe.");
+            return;
+        }
+
         Alert.alert(
             "¿Estás seguro de subir este aviso?",
             "Estás por subir tu aviso, una vez subido no podrás hacer cambios",
@@ -39,14 +58,36 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
                     text: "Subir",
                     onPress: async () => {
                         try {
+                            // Este endpoint necesita un multipart/form-data para funcionar
+                            const formData = new FormData();
+                            formData.append("Acantilado", aviso.Acantilado);
+                            formData.append("FacilAcceso", aviso.FacilAcceso);
+                            formData.append("LugarDondeSeVio", String(aviso.LugarDondeSeVio));
+                            formData.append("Sustrato", String(aviso.Sustrato));
+                            formData.append("FechaDeAvistamiento", aviso.FechaDeAvistamiento);
+                            formData.append("Observaciones", aviso.Observaciones);
+                            formData.append("CondicionDeAnimal", String(aviso.CondicionDeAnimal));
+                            formData.append("CantidadDeAnimales", String(aviso.CantidadDeAnimales));
+                            formData.append("Latitud", String(aviso.Latitud));
+                            formData.append("Longitud", String(aviso.Longitud));
+                            formData.append("InformacionDeLocalizacion", aviso.InformacionDeLocalizacion);
+
+                            const response = await RegistroAviso(formData, tokenGuardado)
+
+                            if(response.error){
+                                Alert.alert("Error al subir tu aviso", "No se ha podido subir tu aviso, intenta más tarde")
+                                return;
+                            }
+
                             const nuevosAvisos = avisos.map((aviso) =>
                                 aviso.id === id ? { ...aviso, subido: true } : aviso
                             );
-                            setAvisos(nuevosAvisos); // Actualiza el estado local
+                            setAvisos(nuevosAvisos); // Actualiza estado
                             await AsyncStorage.setItem("avisos", JSON.stringify(nuevosAvisos)); // Guarda en AsyncStorage
                             Alert.alert("Aviso subido correctamente", "Tu aviso ya se encuentra dentro de VaraWeb");
+
                         } catch (error) {
-                            console.error("Error al actualizar el aviso:", error);
+                            console.error("Error al subir el aviso:", error);
                         }
                     },
                 },
