@@ -1,7 +1,7 @@
 import {
     ApiResponse,
     LoginResponse,
-    LoginViewModel,
+    LoginViewModel, ObtenerAvisos,
     RegistroAvisoRequest,
     RegistroCientificoRequest
 } from "./AuthServiceInterfaces";
@@ -61,6 +61,25 @@ export const RegistroAviso = async (
         );
         return response.data;
     }catch (error) {
+        throw error;
+    }
+}
+
+export const RecuperarAvisosApi = async (
+    token: string,
+) : Promise<ObtenerAvisos[]> => {
+    try{
+        const response = await api.get<ObtenerAvisos[]>(
+            "/Api/Aviso/Avisos",
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return response.data;
+    }catch(error){
         throw error;
     }
 }

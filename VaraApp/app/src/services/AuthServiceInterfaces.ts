@@ -42,6 +42,13 @@ export interface LoginResponse {
     };
 }
 
+export interface ObtenerAvisos {
+    id: number | string;
+    fechaDeAvistamiento?: string;
+    cantidadDeAnimales?: string;
+    fotografia: string | null;
+}
+
 export interface ApiResponse {
     error: boolean;
     message: string[];

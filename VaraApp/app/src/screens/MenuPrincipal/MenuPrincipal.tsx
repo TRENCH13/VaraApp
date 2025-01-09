@@ -8,8 +8,9 @@ import RecommendationsPage from "varaapplib/components/Recommendations/Recommend
 import {router, useRouter} from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {ApiResponse} from "../../services/AuthServiceInterfaces";
-import {RegistroAviso, RegistroCientifico} from "../../services/AuthServices";
+import {RecuperarAvisosApi, RegistroAviso, RegistroCientifico} from "../../services/AuthServices";
 import api from "../../services/Api";
+import {formatearFecha} from "../../helpers/FormattingFunctions";
 
 interface AvisosProps {
     id?: string;
@@ -79,11 +80,10 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
                                 return;
                             }
 
-                            const nuevosAvisos = avisos.map((aviso) =>
-                                aviso.id === id ? { ...aviso, subido: true } : aviso
-                            );
-                            setAvisos(nuevosAvisos); // Actualiza estado
-                            await AsyncStorage.setItem("avisos", JSON.stringify(nuevosAvisos)); // Guarda en AsyncStorage
+                            const nuevosAvisos = avisos.filter((aviso) => aviso.id !== id);
+                            await AsyncStorage.setItem("avisos", JSON.stringify(nuevosAvisos));
+                            setAvisos([]); // Limpia el estado antes de recargar los datos
+                            await cargarAvisos(); // Recarga la lista de avisos desde AsyncStorage
                             Alert.alert("Aviso subido correctamente", "Tu aviso ya se encuentra dentro de VaraWeb");
 
                         } catch (error) {
@@ -94,6 +94,49 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
             ]
         );
     };
+
+    const recuperarAvisosApi = async ( ) => {
+        const tokenGuardado = await AsyncStorage.getItem("TokenAuth");
+        //NOTA: cambiar por alertas de volver a iniciar sesión
+        if (!tokenGuardado) {
+            console.error("No se encontró un token válido para cargar los avisos.");
+            return;
+        }
+        console.log("TOKEN GUGARDADO: ", tokenGuardado);
+        try{
+            const avisosApi = await RecuperarAvisosApi(tokenGuardado);
+
+            //Formateo de los avisos recuperados del api a el formato de aviso en AsyncStorage
+            const avisosTransformados = avisosApi.map((aviso: any) => ({
+                ...aviso,
+                id: aviso.id,
+                subido: true,
+                CantidadDeAnimales: aviso.cantidadDeAnimales,
+                FechaDeAvistamiento: aviso.fechaDeAvistamiento,
+            }));
+
+            // Recupera los avisos locales existentes
+            const avisosLocales = JSON.parse((await AsyncStorage.getItem("avisos")) || "[]");
+
+            // Combina los avisos locales con los recuperados del API, evitando duplicados por `id`
+            const avisosActualizados = [
+                ...avisosLocales,
+                ...avisosTransformados.filter(
+                    (nuevoAviso: any) => !avisosLocales.some((localAviso: any) => localAviso.id === nuevoAviso.id)
+                ),
+            ];
+
+            await AsyncStorage.setItem("avisos", JSON.stringify(avisosActualizados));
+            setAvisos(avisosActualizados);
+
+            console.log("AVISOS ACTUALIZADOS", avisosActualizados);
+
+
+
+        }catch (error){
+            console.error("Error al cargar los avisos desde VaraWeb:", error);
+        }
+    }
 
     const handleLongPress = (id: string) => {
         Alert.alert(
@@ -114,12 +157,13 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
     };
 
     const cargarAvisos = async () => {
+        recuperarAvisosApi()
         try {
             const storedData = await AsyncStorage.getItem("avisos");
             if (storedData) {
                 const parsedData = JSON.parse(storedData);
                 setAvisos(parsedData);
-
+                console.log("AVISOS LOCALES: ", parsedData);
             } else {
                 setAvisos([]);
             }
@@ -179,7 +223,7 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
                                >
                                    <Text style={MenuPrincipalStyle.cardText}>
                                        <Text style={{ fontWeight: "bold" }}> Fecha: </Text>
-                                       {aviso.FechaDeAvistamiento}
+                                       {formatearFecha(aviso.FechaDeAvistamiento)}
                                    </Text>
                                    <Text style={MenuPrincipalStyle.cardText}>
                                        <Text style={{ fontWeight: "bold" }}> Animales Avistados: </Text>
