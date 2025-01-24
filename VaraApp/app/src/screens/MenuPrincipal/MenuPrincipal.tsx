@@ -11,6 +11,8 @@ import {ApiResponse} from "../../services/AuthServiceInterfaces";
 import {RecuperarAvisosApi, RegistroAviso, RegistroCientifico} from "../../services/AuthServices";
 import api from "../../services/Api";
 import {formatearFecha} from "../../helpers/FormattingFunctions";
+import * as FileSystem from 'expo-file-system';
+import * as fs from "node:fs";
 
 interface AvisosProps {
     id?: string;
@@ -73,6 +75,18 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
                             formData.append("Longitud", String(aviso.Longitud));
                             formData.append("InformacionDeLocalizacion", aviso.InformacionDeLocalizacion);
 
+                            console.log("ANTES DE PASAR LA URI")
+
+                            if (aviso.Fotografia) {
+                                const fileName = aviso.Fotografia.split('/').pop();
+                                formData.append("Fotografias", {
+                                    uri: aviso.Fotografia,
+                                    name: fileName,
+                                    type: "image/jpg",
+                                } as any);
+                            }
+
+
                             const response = await RegistroAviso(formData, tokenGuardado)
 
                             if(response.error){
@@ -129,7 +143,6 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
             await AsyncStorage.setItem("avisos", JSON.stringify(avisosActualizados));
             setAvisos(avisosActualizados);
 
-            console.log("AVISOS ACTUALIZADOS", avisosActualizados);
 
 
 
@@ -163,7 +176,6 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
             if (storedData) {
                 const parsedData = JSON.parse(storedData);
                 setAvisos(parsedData);
-                console.log("AVISOS LOCALES: ", parsedData);
             } else {
                 setAvisos([]);
             }
