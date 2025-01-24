@@ -120,6 +120,9 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
         try{
             const avisosApi = await RecuperarAvisosApi(tokenGuardado);
 
+            const avisosConFoto = avisosApi.filter(aviso => aviso.fotografia !== null);
+            console.log("Avisos con fotografía:", avisosConFoto);
+
             //Formateo de los avisos recuperados del api a el formato de aviso en AsyncStorage
             const avisosTransformados = avisosApi.map((aviso: any) => ({
                 ...aviso,
@@ -127,6 +130,7 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
                 subido: true,
                 CantidadDeAnimales: aviso.cantidadDeAnimales,
                 FechaDeAvistamiento: aviso.fechaDeAvistamiento,
+                Fotografia: aviso.fotografia,
             }));
 
             // Recupera los avisos locales existentes
@@ -187,6 +191,10 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
     useEffect(() => {
         cargarAvisos();
     }, []);
+
+    useEffect(() => {
+        console.log("AVISOS CARGADOS", avisos)
+    }, [avisos]);
 
     const handleAgregarAviso = () => {
         router.push({
