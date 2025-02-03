@@ -9,6 +9,7 @@ import {RegistroAvisoPageStyle} from "./RegistroAvisoPage.style";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {AvisoValues} from "varaapplib/components/AvisoForm/types";
 import {useSearchParams} from "expo-router/build/hooks";
+import IdentificarEspeciePage from "../IdentificarEspecie/IdentificarEspeciePage";
 
 const RegistroAvisoPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
@@ -24,37 +25,51 @@ const RegistroAvisoPage: React.FC = () => {
     const generateId = () => `aviso_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
 
     const onSubmitData = async (data: any) => {
-        console.log("Datos enviados:", data);
-        try {
-            const storedData = await AsyncStorage.getItem("avisos");
-            const avisos = storedData ? JSON.parse(storedData) : [];
-            //Sección de la edición de un aviso
-            if(avisoData){
-                //Edición
-                const index = avisos.findIndex((a: any) => a.id === avisoData.id);
-                if (index !== -1) {
-                    avisos[index] = { ...data, id: avisoData.id };
-                }
-            } else{
-                //Registro
-                const newAviso = { id: generateId(), subido: false, ...data };
-                avisos.push(newAviso);
-            }
+        Alert.alert(
+            "¿Desea identificar la especie?",
+            "Si elige No, el mamífero será registrado inmediatamente.",
+            [
+                {
+                    text: "Sí",
+                    onPress: () => router.push("src/screens/IdentificarEspecie/IdentificarEspeciePage")
+                },
+                {
+                    text: "No",
+                    onPress: async () => {
+                        try {
+                            const storedData = await AsyncStorage.getItem("avisos");
+                            const avisos = storedData ? JSON.parse(storedData) : [];
 
-            await AsyncStorage.setItem("avisos", JSON.stringify(avisos));
+                            if (avisoData) {
+                                // Edición
+                                const index = avisos.findIndex((a: any) => a.id === avisoData.id);
+                                if (index !== -1) {
+                                    avisos[index] = { ...data, id: avisoData.id };
+                                }
+                            } else {
+                                // Registro
+                                const newAviso = { id: generateId(), subido: false, ...data };
+                                avisos.push(newAviso);
+                            }
 
-            Alert.alert(
-                avisoData ? "Aviso actualizado con éxito" : "Aviso registrado con éxito",
-                avisoData ? "Los cambios se han guardado." : "Ahora puedes sincronizarlo con Varaweb o editarlo"
-            );
+                            await AsyncStorage.setItem("avisos", JSON.stringify(avisos));
 
-            console.log(avisoData ? "Aviso actualizado:" : "Aviso registrado:", data);
-            setTimeout(() => {
-                router.back();
-            }, 100);
-        } catch (error) {
-            console.error("Error al guardar el aviso:", error);
-        }
+                            Alert.alert(
+                                avisoData ? "Aviso actualizado con éxito" : "Aviso registrado con éxito",
+                                avisoData ? "Los cambios se han guardado." : "Ahora puedes sincronizarlo con Varaweb o editarlo"
+                            );
+
+                            console.log(avisoData ? "Aviso actualizado:" : "Aviso registrado:", data);
+                            setTimeout(() => {
+                                router.back();
+                            }, 100);
+                        } catch (error) {
+                            console.error("Error al guardar el aviso:", error);
+                        }
+                    },
+                },
+            ]
+        );
     };
 
 
