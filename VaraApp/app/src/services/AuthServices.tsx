@@ -1,5 +1,5 @@
 import {
-    ApiResponse,
+    ApiResponse, AvisoResponse,
     LoginResponse,
     LoginViewModel, ObtenerAvisos,
     RegistroAvisoRequest,
@@ -80,6 +80,27 @@ export const RecuperarAvisosApi = async (
         );
         return response.data;
     }catch(error){
+        throw error;
+    }
+}
+
+export const ObtenerAvisoApi = async (
+    token: string,
+    id: string,
+): Promise<AvisoResponse> => {
+    try{
+        const response = await api.get<AvisoResponse>(
+            "/Api/Aviso/Aviso",
+            {
+                params: { id },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                }
+            }
+        );
+        return response.data;
+    }catch (error) {
         throw error;
     }
 }

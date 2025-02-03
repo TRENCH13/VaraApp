@@ -116,16 +116,12 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
             console.error("No se encontró un token válido para cargar los avisos.");
             return;
         }
-        console.log("TOKEN GUGARDADO: ", tokenGuardado);
         try{
+            console.log("ANTES DE CARGAR AVISOS");
             const avisosApi = await RecuperarAvisosApi(tokenGuardado);
-
-            const avisosConFoto = avisosApi.filter(aviso => aviso.fotografia !== null);
-            console.log("Avisos con fotografía:", avisosConFoto);
 
             //Formateo de los avisos recuperados del api a el formato de aviso en AsyncStorage
             const avisosTransformados = avisosApi.map((aviso: any) => ({
-                ...aviso,
                 id: aviso.id,
                 subido: true,
                 CantidadDeAnimales: aviso.cantidadDeAnimales,
@@ -147,8 +143,7 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
             await AsyncStorage.setItem("avisos", JSON.stringify(avisosActualizados));
             setAvisos(avisosActualizados);
 
-
-
+            console.log("AVISOS CARGADOS CORRECTAMENTE :)");
 
         }catch (error){
             console.error("Error al cargar los avisos desde VaraWeb:", error);
@@ -192,10 +187,6 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
         cargarAvisos();
     }, []);
 
-    useEffect(() => {
-        console.log("AVISOS CARGADOS", avisos)
-    }, [avisos]);
-
     const handleAgregarAviso = () => {
         router.push({
             pathname: "src/screens/RegistroAviso/RegistroAvisoPage"
@@ -203,11 +194,13 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
     };
     const handleCardPress = (aviso: any) => {
         if(aviso.subido){
+            console.log("CONSULTA DE AVISO SUBIDO");
             router.push({
-                pathname: "src/screens/ConsultaAvisoSubido/ConsultaAvisoSubidoPage",
+                pathname: "/src/screens/ConsultaAvisoSubido/ConsultaAvisoSubidoPage",
                 params: { aviso: JSON.stringify(aviso) },
             });
         }else{
+            console.log("EDICIÓN DE AVISO NO SUBIDO");
             router.push({
                 pathname: "src/screens/RegistroAviso/RegistroAvisoPage",
                 params: { aviso: JSON.stringify(aviso) },

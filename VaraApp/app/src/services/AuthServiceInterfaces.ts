@@ -49,6 +49,27 @@ export interface ObtenerAvisos {
     fotografia: string | null;
 }
 
+export interface Aviso {
+    id: string | string;
+    facilAcceso: boolean | null;
+    cantidadDeAnimales: number | null;
+    acantilado: boolean  | null;
+    observaciones: string | null;
+    lugarDondeSeVio: number | null;
+    fechaDeAvistamiento?: string;
+    tipoDeAnimal: number | null;
+    sustrato: number | null;
+    condicionDeAnimal: number | null;
+    latitud: number | null;
+    longitud: number | null;
+    informacionDeLocalizacion: string | null;
+}
+
+export interface AvisoResponse {
+    aviso: Aviso;
+    fotografías: string[];
+}
+
 export interface ApiResponse {
     error: boolean;
     message: string[];
