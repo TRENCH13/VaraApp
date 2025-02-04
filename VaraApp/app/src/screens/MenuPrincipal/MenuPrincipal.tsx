@@ -71,6 +71,7 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
                             formData.append("Observaciones", aviso.Observaciones);
                             formData.append("CondicionDeAnimal", String(aviso.CondicionDeAnimal));
                             formData.append("CantidadDeAnimales", String(aviso.CantidadDeAnimales));
+                            formData.append("TipoDeAnimal", String(aviso.TipoDeAnimal));
                             formData.append("Latitud", String(aviso.Latitud));
                             formData.append("Longitud", String(aviso.Longitud));
                             formData.append("InformacionDeLocalizacion", aviso.InformacionDeLocalizacion);

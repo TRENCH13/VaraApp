@@ -9,7 +9,6 @@ import {RegistroAvisoPageStyle} from "./RegistroAvisoPage.style";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {AvisoValues} from "varaapplib/components/AvisoForm/types";
 import {useSearchParams} from "expo-router/build/hooks";
-import IdentificarEspeciePage from "../IdentificarEspecie/IdentificarEspeciePage";
 
 const RegistroAvisoPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
@@ -25,51 +24,66 @@ const RegistroAvisoPage: React.FC = () => {
     const generateId = () => `aviso_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
 
     const onSubmitData = async (data: any) => {
-        Alert.alert(
-            "¿Desea identificar la especie?",
-            "Si elige No, el mamífero será registrado inmediatamente.",
-            [
-                {
-                    text: "Sí",
-                    onPress: () => router.push("src/screens/IdentificarEspecie/IdentificarEspeciePage")
-                },
-                {
-                    text: "No",
-                    onPress: async () => {
-                        try {
-                            const storedData = await AsyncStorage.getItem("avisos");
-                            const avisos = storedData ? JSON.parse(storedData) : [];
+        try {
+            setLoading(true);
 
-                            if (avisoData) {
-                                // Edición
-                                const index = avisos.findIndex((a: any) => a.id === avisoData.id);
-                                if (index !== -1) {
-                                    avisos[index] = { ...data, id: avisoData.id };
-                                }
-                            } else {
-                                // Registro
-                                const newAviso = { id: generateId(), subido: false, ...data };
-                                avisos.push(newAviso);
-                            }
+            // Recuperar avisos almacenados
+            const storedData = await AsyncStorage.getItem("avisos");
+            const avisos = storedData ? JSON.parse(storedData) : [];
 
-                            await AsyncStorage.setItem("avisos", JSON.stringify(avisos));
+            let avisoId = avisoData ? avisoData.id : generateId();
+            let updatedAviso = { ...data, id: avisoId, subido: false };
 
+            if (avisoData) {
+                // Edición de un aviso existente
+                const index = avisos.findIndex((a: any) => a.id === avisoData.id);
+                if (index !== -1) {
+                    avisos[index] = updatedAviso;
+                }
+            } else {
+                // Registro de un nuevo aviso
+                avisos.push(updatedAviso);
+            }
+
+            // Guardar en AsyncStorage
+            await AsyncStorage.setItem("avisos", JSON.stringify(avisos));
+
+            console.log(avisoData ? "Aviso actualizado:" : "Aviso registrado:", updatedAviso);
+
+            Alert.alert(
+                "¿Desea identificar la especie?",
+                "Si no desea hacerlo puede continuarlo en otro momento",
+                [
+                    {
+                        text: "Identificar",
+                        onPress: () => {
+                            console.log("AVISO ID: ",avisoId )
+                            router.push({
+                                pathname: "src/screens/IdentificarEspecie/IdentificarEspeciePage",
+                                params: { avisoId }
+                            });
+                        }
+                    },
+                    {
+                        text: "No identificar",
+                        style: "destructive",
+                        onPress: () => {
                             Alert.alert(
                                 avisoData ? "Aviso actualizado con éxito" : "Aviso registrado con éxito",
                                 avisoData ? "Los cambios se han guardado." : "Ahora puedes sincronizarlo con Varaweb o editarlo"
                             );
-
-                            console.log(avisoData ? "Aviso actualizado:" : "Aviso registrado:", data);
                             setTimeout(() => {
                                 router.back();
                             }, 100);
-                        } catch (error) {
-                            console.error("Error al guardar el aviso:", error);
                         }
-                    },
-                },
-            ]
-        );
+                    }
+                ]
+            );
+        } catch (error) {
+            console.error("Error al guardar el aviso:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
 
@@ -103,7 +117,6 @@ const RegistroAvisoPage: React.FC = () => {
                     loading={loading}
                     setLoading={setLoading}
                     onValuesChange={(values: Partial<AvisoValues>) => {
-                        console.log("Valores cambiados:", values);
                     }}
                     data={{
                         Nombre: avisoData?.Nombre || "",

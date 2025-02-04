@@ -1,10 +1,12 @@
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {Ionicons} from "@expo/vector-icons";
-import {Text, TouchableOpacity, View, Image} from "react-native";
+import {Text, TouchableOpacity, View, Image, Alert} from "react-native";
 import CustomizableHeader from "varaapplib/components/CustomizableHeader/CustomizableHeader";
 import IdentificarEspeciePageStyle from "./IdentificarEspeciePage.style";
 import {router} from "expo-router";
+import {useSearchParams} from "expo-router/build/hooks";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const IdentificarEspeciePage: React.FC = () => {
@@ -14,8 +16,64 @@ const IdentificarEspeciePage: React.FC = () => {
     const Pinnipedo = require("./pinniped.png");
     const Sirenio = require("./sirenia.png");
 
+    const searchParams = useSearchParams();
+    const avisoId = searchParams.get("avisoId");
+
+    console.log("AVISO ID EN INDENTIFICACION: ", avisoId);
+
     const handleBack = () => {
-        router.back();
+        Alert.alert(
+            "Confirmación",
+            "¿Estás seguro de que deseas regresar al menú principal?",
+            [
+                {
+                    text: "Cancelar",
+                    style: "cancel"
+                },
+                {
+                    text: "Sí",
+                    onPress: () => {
+                        router.replace("src/screens/MenuPrincipal/MenuPrincipal");
+                    }
+                }
+            ]
+        );
+    };
+
+    const guardarTipoDeAnimal = async (tipo: number) => {
+        if (!avisoId) {
+            Alert.alert("Error", "No se ha podido realizar la operación, intente más tarde");
+            return;
+        }
+
+        try {
+            // Recuperar avisos almacenados
+            const storedData = await AsyncStorage.getItem("avisos");
+            const avisos = storedData ? JSON.parse(storedData) : [];
+
+            //Buscar por id
+            const index = avisos.findIndex((a: any) => a.id === avisoId);
+            if (index === -1) {
+                Alert.alert("Error", "No se encontró el aviso.");
+                return;
+            }
+
+            avisos[index] = { ...avisos[index], TipoDeAnimal: tipo };
+            await AsyncStorage.setItem("avisos", JSON.stringify(avisos));
+            Alert.alert(
+                "Especie identificada con éxito",
+                "Ahora puedes sincronizar este aviso con VaraWeb"
+            );
+            setTimeout(() => {
+                router.navigate({
+                    pathname: "src/screens/MenuPrincipal/MenuPrincipal"
+                });
+            }, 100);
+
+        } catch (error) {
+            Alert.alert("Error", "No se pudo guardar la especie del animal de tu aviso, intenta más tarde.");
+            console.error("Error al guardar el tipo de animal:", error);
+        }
     };
 
     return (
@@ -57,13 +115,14 @@ const IdentificarEspeciePage: React.FC = () => {
             <View style={{ flex: 1, alignItems: "center", paddingTop: 20 }}>
                 <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-around", width: "95%" }}>
                     {[
-                        { text: "Mysticeto", image: Mysticeto },
-                        { text: "Odontoceto", image: Odontoceto },
-                        { text: "Pinnipedo", image: Pinnipedo },
-                        { text: "Sirenio", image: Sirenio }
+                        { text: "Mysticeto", image: Mysticeto, value: 1 },
+                        { text: "Odontoceto", image: Odontoceto, value: 0 },
+                        { text: "Pinnipedo", image: Pinnipedo, value: 2 },
+                        { text: "Sirenio", image: Sirenio, value: 3 }
                     ].map((item, index) => (
                         <TouchableOpacity
                             key={index}
+                            onPress={() => guardarTipoDeAnimal(item.value)}
                             style={{
                                 width: "40%",
                                 margin: 10,

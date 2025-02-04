@@ -28,6 +28,7 @@ export interface RegistroAvisoRequest {
     Observaciones: string;
     CondicionDeAnimal: number;
     CantidadDeAnimales: number;
+    TipoDeAnimal: number;
     Latitud: number;
     Longitud: number;
     InformacionDeLocalizacion: string;

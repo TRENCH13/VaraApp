@@ -103,7 +103,7 @@ const ConsultaAvisoSubidoPage: React.FC = () => {
                 {avisoFormData ? (
                     <AvisoForm
                         onSubmitData={onSubmitData}
-                        showEspecie={false}
+                        showEspecie={true}
                         loading={loading}
                         setLoading={setLoading}
                         isDisabled={true}
