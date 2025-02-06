@@ -142,6 +142,23 @@ const IdentificarEspeciePage: React.FC = () => {
                     ))}
                 </View>
             </View>
+            <TouchableOpacity
+                onPress={() => router.push({pathname: "src/screens/PreguntasDictomicas/PreguntasDictomicasPage", params: { avisoId }})}
+                style={{
+                    width: "95%",
+                    padding: 15,
+                    backgroundColor: "#f9f9f9",
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: "#ddd",
+                    alignSelf: "center",
+                    marginBottom: 20,
+                    alignItems: "center",
+                }}
+            >
+                <Text style={{ fontSize: 18, fontWeight: "bold", color: "#000000" }}>Ninguna</Text>
+            </TouchableOpacity>
+
         </SafeAreaView>
     )
 }
