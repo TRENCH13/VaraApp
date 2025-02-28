@@ -7,12 +7,9 @@ import { BlurView } from "expo-blur";
 import RecommendationsPage from "varaapplib/components/Recommendations/RecommendationsPage";
 import {router, useRouter} from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {ApiResponse} from "../../services/AuthServiceInterfaces";
-import {RecuperarAvisosApi, RegistroAviso, RegistroCientifico} from "../../services/AuthServices";
-import api from "../../services/Api";
+import {RecuperarAvisosApi, RegistroAviso } from "../../services/AuthServices";
 import {formatearFecha} from "../../helpers/FormattingFunctions";
-import * as FileSystem from 'expo-file-system';
-import * as fs from "node:fs";
+import NetInfo from '@react-native-community/netinfo';
 
 interface AvisosProps {
     id?: string;
@@ -33,6 +30,27 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
     };
 
     const subirAviso = async (id: string) => {
+
+        let tipoConexionActual = null;
+        //Obtener el tipo de conexión del dispositivo
+        NetInfo.fetch().then(state => {
+            console.log('Connection type: ', state.type);
+            tipoConexionActual = state.type
+        });
+
+        const preferenciaConexion = await AsyncStorage.getItem("onlyWifi");
+        console.log(preferenciaConexion);
+
+        console.log("ANTES DE EVALUAR LOS VALORES SON: ", preferenciaConexion, " Y ", tipoConexionActual);
+
+
+        if (preferenciaConexion == "true" && tipoConexionActual !== "wifi") {
+            Alert.alert(
+                "No se puede realizar esta operación",
+                "No puedes subir el aviso porque la opción de solo Wi-Fi está activada y no estás conectado a una red Wi-Fi."
+            );
+            return;
+        }
 
         const tokenGuardado = await AsyncStorage.getItem("TokenAuth");
         const fechaExpiracionToken = await AsyncStorage.getItem("FechaExpiracionToken");
@@ -111,6 +129,25 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
     };
 
     const recuperarAvisosApi = async ( ) => {
+
+        let tipoConexionActual = null;
+        //Obtener el tipo de conexión del dispositivo
+        NetInfo.fetch().then(state => {
+            tipoConexionActual = state.type
+        });
+
+        const preferenciaConexion = await AsyncStorage.getItem("onlyWifi");
+        console.log("2 ANTES DE EVALUAR LOS VALORES SON: ", preferenciaConexion, " Y ", tipoConexionActual);
+
+        if (preferenciaConexion == "true" && tipoConexionActual !== "wifi") {
+            Alert.alert(
+                "No se pueden cargar tus avisos",
+                "No se pueden cargar tus avisos de VaraWeb porque la opción de solo Wi-Fi está activada y no estás conectado a una red Wi-Fi."
+            );
+            return;
+
+        }
+
         const tokenGuardado = await AsyncStorage.getItem("TokenAuth");
         //NOTA: cambiar por alertas de volver a iniciar sesión
         if (!tokenGuardado) {
@@ -186,6 +223,7 @@ const Avisos: React.FC<AvisosProps> = ({ id }) => {
 
     useEffect(() => {
         cargarAvisos();
+
     }, []);
 
     const handleAgregarAviso = () => {
@@ -309,6 +347,7 @@ const Recomendaciones = () => {
 const MenuPrincipal: React.FC = () => {
     const [selectedTab, setSelectedTab] = useState<"Aviso" | "Recomendaciones">("Aviso");
     const [modalVisible, setModalVisible] = useState(false);
+    const [onlyWifi, setOnlyWifi] = useState<boolean>(false);
 
     const handleConfiguracion = () => {
         router.push({
@@ -319,6 +358,27 @@ const MenuPrincipal: React.FC = () => {
     const toggleModal = () => {
         setModalVisible(!modalVisible);
     };
+
+    useEffect(() => {
+        const loadWifiPreference = async () => {
+            try {
+                const storedWifiPreference = await AsyncStorage.getItem("onlyWifi");
+
+                if (storedWifiPreference === null) {
+                    // Si es null, establecerlo como false
+                    await AsyncStorage.setItem("onlyWifi", JSON.stringify(false));
+                    setOnlyWifi(false);
+                } else {
+                    // Si tiene un valor, convertirlo a booleano y actualizar el estado
+                    setOnlyWifi(JSON.parse(storedWifiPreference));
+                }
+                console.log("PREFERENCIA AL CARGAR: ", storedWifiPreference);
+            } catch (error) {
+                console.error("Error al cargar la preferencia de solo Wi-Fi:", error);
+            }
+        };
+        loadWifiPreference();
+    }, []);
 
     return (
       <LinearGradient

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {View, Text, Switch, Pressable, Alert, SafeAreaView} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ConfiguracionPageStyle from "./ConfiguracionPage.style";
@@ -11,12 +11,33 @@ const ConfiguracionPage: React.FC = () => {
 
     const router = useRouter();
 
+    useEffect(() => {
+        const loadWifiPreference = async () => {
+            try {
+                const storedWifiPreference = await AsyncStorage.getItem("onlyWifi");
+
+                if (storedWifiPreference === null) {
+                    // Si no hay configuración, establecer en false y guardarla
+                    await AsyncStorage.setItem("onlyWifi", JSON.stringify(false));
+                    setOnlyWifi(false);
+                } else {
+                    setOnlyWifi(JSON.parse(storedWifiPreference));
+                }
+            } catch (error) {
+                console.error("Error al cargar la preferencia de Wi-Fi:", error);
+            }
+        };
+
+        loadWifiPreference();
+    }, []);
+
     // Función para alternar el estado de "Solo Wi-Fi"
     const toggleWifi = async () => {
         try {
             const newValue = !onlyWifi;
             setOnlyWifi(newValue);
             await AsyncStorage.setItem("onlyWifi", JSON.stringify(newValue));
+            console.log(newValue);
         } catch (error) {
             console.error("Error guardando preferencia de Wi-Fi:", error);
         }
