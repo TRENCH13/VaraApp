@@ -19,7 +19,7 @@ const ConsultaAvisoSubidoPage: React.FC = () => {
     const [avisoApiData, setAvisoApiData] = useState<AvisoResponse | null>(null);
     const [avisoFormData, setAvisoFormData] = useState<AvisoValues | null>(null);
 
-    const BASE_URL = "http://192.168.1.76";
+    const BASE_URL = "http://192.168.1.99";
 
     const CustomButton = ({ onPress }: { onPress?: () => void }) => (
         <Pressable
@@ -45,7 +45,7 @@ const ConsultaAvisoSubidoPage: React.FC = () => {
         const tokenGuardado = await AsyncStorage.getItem("TokenAuth");
 
         if (!tokenGuardado) {
-            console.error("No se encontró un token válido para cargar los avisos.");
+            Alert.alert("Error", "Su sesión ha vencido, cierre y vuelva a iniciar sesión")
             return;
         }
 
@@ -54,7 +54,7 @@ const ConsultaAvisoSubidoPage: React.FC = () => {
             setAvisoApiData(avisoApi);
 
         } catch (error) {
-            console.error("Error al cargar el aviso desde VaraWeb:", error);
+            Alert.alert("Error", `Su sesión ha vencido, cierre y vuelva a iniciar sesión, error:  ${error}`)
         }
     };
 

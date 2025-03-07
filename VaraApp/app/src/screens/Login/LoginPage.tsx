@@ -60,21 +60,15 @@ const LoginPage: React.FC = () => {
             }
 
             const respuesta = await Login(loginData);
-            if (respuesta.error) {
-                Alert.alert("Error", "El correo o la contraseña son incorrectos.");
-                return;
+            if (!respuesta.error) {
+                const { token, fecha_de_expiración } = respuesta.data;
+                await AsyncStorage.setItem("TokenAuth", token);
+                await AsyncStorage.setItem("FechaExpiracionToken", fecha_de_expiración);
+
+                router.navigate({
+                    pathname: "src/screens/MenuPrincipal/MenuPrincipal"
+                });
             }
-
-            // Si la respuesta es exitosa
-
-            const { token, fecha_de_expiración } = respuesta.data;
-            await AsyncStorage.setItem("TokenAuth", token);
-            await AsyncStorage.setItem("FechaExpiracionToken", fecha_de_expiración);
-
-            router.navigate({
-                pathname: "src/screens/MenuPrincipal/MenuPrincipal"
-            });
-
         }catch (error){
             setFailedAttempts(prev => prev + 1);
 
@@ -96,8 +90,6 @@ const LoginPage: React.FC = () => {
             setLoading(false)
         }
     };
-
-
 
     return (
         <View style={{ flex: 1 }}>
