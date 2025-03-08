@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { View, Alert, ScrollView } from "react-native";
+import { View, Alert } from "react-native";
 import InformacionPersonalForm from "varaapplib/components/InformacionPersonalForm/InformacionPersonalForm";
 import { AxiosError } from "axios";
 import {Ionicons} from "@expo/vector-icons";

@@ -60,16 +60,17 @@ const LoginPage: React.FC = () => {
             }
 
             const respuesta = await Login(loginData);
+
             if (!respuesta.error) {
                 const { token, fecha_de_expiración } = respuesta.data;
                 await AsyncStorage.setItem("TokenAuth", token);
                 await AsyncStorage.setItem("FechaExpiracionToken", fecha_de_expiración);
-
-                router.navigate({
+                router.replace({
                     pathname: "src/screens/MenuPrincipal/MenuPrincipal"
                 });
+                setLoading(false);
             }
-        }catch (error){
+        }catch (error: Error | any){
             setFailedAttempts(prev => prev + 1);
 
             if (failedAttempts + 1 >= 4) {
@@ -80,15 +81,12 @@ const LoginPage: React.FC = () => {
                     "Has excedido los intentos permitidos. Intenta de nuevo en 4 minutos."
                 );
             } else {
-                Alert.alert(
-                    "Error al iniciar sesión",
-                    `Verifique sus credenciales o comuníquese con soporte. Intentos restantes: ${4 - (failedAttempts + 1)}`
-                );
+                Alert.alert("Error", error.message);
             }
-            setLoading(false);
         } finally {
             setLoading(false)
         }
+
     };
 
     return (

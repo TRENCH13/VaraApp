@@ -16,6 +16,11 @@ const AvisosPage: React.FC<AvisosProps> = ({ id }) => {
     const [avisos, setAvisos] = useState<any[]>([]);
     const router = useRouter();
 
+    const formatearFecha = (fecha?: string): string => {
+        if (!fecha) return "Fecha no disponible"; // O cualquier mensaje por defecto
+        return fecha.split("T")[0];
+    };
+
     const borrarAviso = async (id: string) => {
         try {
             const nuevosAvisos = avisos.filter((aviso) => aviso.id !== id); // Filtrado por el ID de uuid
@@ -127,11 +132,11 @@ const AvisosPage: React.FC<AvisosProps> = ({ id }) => {
     };
 
     const recuperarAvisosApi = async () => {
-
         let tipoConexionActual = null;
-        //Obtener el tipo de conexión del dispositivo
+
+        // Obtener el tipo de conexión del dispositivo
         NetInfo.fetch().then(state => {
-            tipoConexionActual = state.type
+            tipoConexionActual = state.type;
         });
 
         const preferenciaConexion = await AsyncStorage.getItem("onlyWifi");
@@ -143,48 +148,46 @@ const AvisosPage: React.FC<AvisosProps> = ({ id }) => {
                 "No se pueden cargar tus avisos de VaraWeb porque la opción de solo Wi-Fi está activada y no estás conectado a una red Wi-Fi."
             );
             return;
-
         }
 
         const tokenGuardado = await AsyncStorage.getItem("TokenAuth");
-        //NOTA: cambiar por alertas de volver a iniciar sesión
         if (!tokenGuardado) {
-            Alert.alert("Error", `Su sesión ha vencido, cierre y vuelva a iniciar sesión`)
+            Alert.alert("Error", `Su sesión ha vencido, cierre y vuelva a iniciar sesión`);
             return;
         }
+
         try {
             console.log("ANTES DE CARGAR AVISOS");
             const avisosApi = await RecuperarAvisosApi(tokenGuardado);
 
-            //Formateo de los avisos recuperados del api a el formato de aviso en AsyncStorage
-            const avisosTransformados = avisosApi.map((aviso: any) => ({
-                id: aviso.id,
-                subido: true,
-                CantidadDeAnimales: aviso.cantidadDeAnimales,
-                FechaDeAvistamiento: aviso.fechaDeAvistamiento,
-                Fotografia: aviso.fotografia,
-            }));
+            setTimeout(async () => {
+                const avisosTransformados = avisosApi.map((aviso: any) => ({
+                    id: aviso.id,
+                    subido: true,
+                    CantidadDeAnimales: aviso.cantidadDeAnimales,
+                    FechaDeAvistamiento: aviso.fechaDeAvistamiento,
+                    Fotografia: aviso.fotografia,
+                }));
 
-            // Recupera los avisos locales existentes
-            const avisosLocales = JSON.parse((await AsyncStorage.getItem("avisos")) || "[]");
+                const avisosLocales = JSON.parse((await AsyncStorage.getItem("avisos")) || "[]");
 
-            // Combina los avisos locales con los recuperados del API, evitando duplicados por `id`
-            const avisosActualizados = [
-                ...avisosLocales,
-                ...avisosTransformados.filter(
-                    (nuevoAviso: any) => !avisosLocales.some((localAviso: any) => localAviso.id === nuevoAviso.id)
-                ),
-            ];
+                const avisosActualizados = [
+                    ...avisosLocales,
+                    ...avisosTransformados.filter(
+                        (nuevoAviso: any) => !avisosLocales.some((localAviso: any) => localAviso.id === nuevoAviso.id)
+                    ),
+                ];
 
-            await AsyncStorage.setItem("avisos", JSON.stringify(avisosActualizados));
-            setAvisos(avisosActualizados);
+                await AsyncStorage.setItem("avisos", JSON.stringify(avisosActualizados));
+                setAvisos(avisosActualizados);
 
-            console.log("AVISOS CARGADOS CORRECTAMENTE :)");
+                console.log("AVISOS CARGADOS CORRECTAMENTE :)");
+            }, 800); // Espera 1 segundo antes de asignar los datos
 
         } catch (error) {
             console.error("Error al cargar los avisos desde VaraWeb:", error);
         }
-    }
+    };
 
     const handleLongPress = (id: string) => {
         Alert.alert(

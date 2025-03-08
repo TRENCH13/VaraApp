@@ -2,10 +2,10 @@ import {
     ApiResponse, AvisoResponse,
     LoginResponse,
     LoginViewModel, ObtenerAvisos,
-    RegistroAvisoRequest,
     RegistroCientificoRequest
 } from "./AuthServiceInterfaces";
 import api from "./Api";
+import axios from "axios";
 
 export  const Login = async (data: LoginViewModel): Promise<LoginResponse> => {
     try {
@@ -20,8 +20,25 @@ export  const Login = async (data: LoginViewModel): Promise<LoginResponse> => {
         );
 
         return response.data;
-    } catch (error) {
-        throw error;
+    } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+            const status = error.response?.status;
+
+            switch (status) {
+                case 400:
+                    throw new Error("Correo o contraseña incorrectos.");
+                case 401:
+                    throw new Error("Sin permisos. Verifica tus credenciales o crea una cuenta.");
+                case 500:
+                    throw new Error("Error interno del servidor. Inténtalo más tarde.");
+                default:
+                    throw new Error(
+                        error.response?.data?.message ||
+                        "Ocurrió un error inesperado. comuníquese con soporte."
+                    );
+            }
+        }
+        throw new Error(error.message || "Ocurrió un error desconocido.");
     }
 };
 

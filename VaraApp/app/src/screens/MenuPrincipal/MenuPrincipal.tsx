@@ -5,7 +5,7 @@ import MenuPrincipalStyle from "./MenuPrincipal.style";
 import {AntDesign} from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import RecommendationsPage from "varaapplib/components/Recommendations/RecommendationsPage";
-import {router, useRouter} from "expo-router";
+import {router} from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AvisosPage from '../Avisos/AvisosPage';
 
