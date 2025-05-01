@@ -5,7 +5,6 @@ import {Alert, Pressable, ScrollView, Text, View} from "react-native";
 import NetInfo from "@react-native-community/netinfo";
 import {RecuperarAvisosApi, RegistroAviso} from "../../services/AuthServices";
 import MenuPrincipalStyle from "../MenuPrincipal/MenuPrincipal.style";
-import {formatearFecha} from "../../helpers/FormattingFunctions";
 import {AntDesign, Ionicons} from "@expo/vector-icons";
 import {AvisosPageStyle} from "./AvisosPage.style";
 
@@ -100,11 +99,20 @@ const AvisosPage: React.FC<AvisosProps> = ({ id }) => {
                             console.log("ANTES DE PASAR LA URI")
 
                             if (aviso.Fotografia) {
-                                const fileName = aviso.Fotografia.split('/').pop();
+                                const fileName = aviso.Fotografia.split('/').pop() || "image.jpg";
+                                const extension = fileName.split('.').pop()?.toLowerCase();
+                                let mimeType = "image/jpeg";
+
+                                if (extension === "png") {
+                                    mimeType = "image/png";
+                                } else if (extension === "jpg" || extension === "jpeg") {
+                                    mimeType = "image/jpeg";
+                                }
+
                                 formData.append("Fotografias", {
                                     uri: aviso.Fotografia,
                                     name: fileName,
-                                    type: "image/jpg",
+                                    type: mimeType,
                                 } as any);
                             }
 

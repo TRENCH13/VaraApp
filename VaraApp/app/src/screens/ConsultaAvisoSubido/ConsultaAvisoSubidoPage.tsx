@@ -19,7 +19,7 @@ const ConsultaAvisoSubidoPage: React.FC = () => {
     const [avisoApiData, setAvisoApiData] = useState<AvisoResponse | null>(null);
     const [avisoFormData, setAvisoFormData] = useState<AvisoValues | null>(null);
 
-    const BASE_URL = "http://192.168.1.99";
+    const BASE_URL = "http://192.168.1.68";
 
     const CustomButton = ({ onPress }: { onPress?: () => void }) => (
         <Pressable
